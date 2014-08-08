@@ -8,5 +8,3 @@ var pkg = require(PACKAGE);
 
 console.log(pkg);
 
-
-
