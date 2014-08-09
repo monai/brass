@@ -9,63 +9,62 @@ var CWD = process.cwd();
 var PACKAGER_DIR = __dirname;
 
 var BUILDROOT_NAME = 'packager_build';
-var TMP_MODULE_DIR = 'examples/theapp';
+var TMP_PACKAGE_DIR = 'examples/theapp';
 
 var BUILDROOT_DIR = path.resolve(CWD, BUILDROOT_NAME);
-var MODULE_DIR = path.resolve(CWD, TMP_MODULE_DIR);
-var PACKAGE_JSON = path.join(MODULE_DIR, 'package.json');
+var PACKAGE_DIR = path.resolve(CWD, TMP_PACKAGE_DIR);
+var PACKAGE_JSON = path.join(PACKAGE_DIR, 'package.json');
 
-var data = {
+var config = {
     BUILDROOT_DIR: BUILDROOT_DIR,
-    MODULE_DIR: MODULE_DIR
+    PACKAGE_DIR: PACKAGE_DIR
 };
 
 async.series([
-    prepareData(data),
+    prepareConfig,
     prepareBuildRoot,
-    prepareSpecFile
+    prepareSpecFile,
+    packModule,
 ], function (error, result) {
     if (error) {
         console.error(error);
     }
 });
 
-function prepareData(data) {
+function prepareConfig(callback) {
     var pkg, defaults;
     
     pkg = require(PACKAGE_JSON);
     
-    return function doPrepareData(callback) {
-        extend(data, {
-            name: pkg.name,
-            version: pkg.version,
-            description: pkg.description,
-            license: pkg.license,
-        });
-        
-        if (pkg.author) {
-            data.vendor = pkg.author;
-        }
-        
-        defaults = {
-            // summary: 'Node.js module '+ pkg.name,
-            release: 1,
-            group: 'Applications/Internet',
-            source: path.join(MODULE_DIR, pkg.name +'-'+ pkg.version +'.tgz')
-        };
-        
-        if (pkg.packager) {
-            extend(data, pkg.packager);
-        }
-        
-        for (var i in defaults) {
-            if (defaults.hasOwnProperty(i) && ! (i in data) || ! data  || ! data[i].length) {
-                data[i] = defaults[i];
-            }
-        }
-        
-        callback(null);
+    extend(config, {
+        name: pkg.name,
+        version: pkg.version,
+        description: pkg.description,
+        license: pkg.license,
+    });
+    
+    if (pkg.author) {
+        config.vendor = pkg.author;
     }
+    
+    defaults = {
+        // summary: 'Node.js module '+ pkg.name,
+        release: 1,
+        group: 'Applications/Internet',
+        source: path.join(PACKAGE_DIR, pkg.name +'-'+ pkg.version +'.tgz')
+    };
+    
+    if (pkg.packager) {
+        extend(config, pkg.packager);
+    }
+    
+    for (var i in defaults) {
+        if (defaults.hasOwnProperty(i) && ! (i in config) || ! config  || ! config[i].length) {
+            config[i] = defaults[i];
+        }
+    }
+    
+    callback(null);
 }
 
 function prepareBuildRoot(callback) {
@@ -88,14 +87,22 @@ function prepareSpecFile(callback) {
             fs.readFile('assets/spec.tpl', 'utf8', callback);
         }, function (content, callback) {
             try {
-                callback(null, ejs.render(content, data));
+                callback(null, ejs.render(content, config));
             } catch (error) {
                 callback(error);
             }
         }, function (content, callback) {
-            fs.writeFile(path.join(BUILDROOT_DIR, 'SPECS', data.name +'.spec'), content, callback);
+            fs.writeFile(path.join(BUILDROOT_DIR, 'SPECS', config.name +'.spec'), content, callback);
         }
     ], callback);
+}
+
+function packModule(callback) {
+    npm.load({}, function (error) {
+        console.log(error);
+    });
+    
+    callback(null);
 }
 
 function extend(target) {
