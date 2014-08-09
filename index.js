@@ -1,6 +1,9 @@
 var fs = require('fs');
+var mv = require('mv');
 var ejs = require('ejs');
+var util = require('util');
 var path = require('path');
+var exec = require('child_process').exec;
 var async = require('async');
 var rimraf = require('rimraf');
 var mkdirp = require('mkdirp');
@@ -24,10 +27,12 @@ async.series([
     prepareConfig,
     prepareBuildRoot,
     prepareSpecFile,
-    packModule,
+    prepareSources,
+    buildPackage
 ], function (error, result) {
     if (error) {
-        console.error(error);
+        console.error(util.inspect(error));
+        console.log(result.length);
     }
 });
 
@@ -48,10 +53,11 @@ function prepareConfig(callback) {
     }
     
     defaults = {
-        // summary: 'Node.js module '+ pkg.name,
+        summary: 'Node.js module '+ pkg.name,
         release: 1,
         group: 'Applications/Internet',
-        source: path.join(PACKAGE_DIR, pkg.name +'-'+ pkg.version +'.tgz')
+        source: pkg.name +'-'+ pkg.version +'.tgz',
+        specfile: pkg.name +'.spec'
     };
     
     if (pkg.packager) {
@@ -68,13 +74,17 @@ function prepareConfig(callback) {
 }
 
 function prepareBuildRoot(callback) {
+    var fullpath;
+    
     rimraf(BUILDROOT_DIR, function (error) {
         if (error) {
             return callback(error);
         }
         
         async.each([ 'BUILD', 'RPMS', 'SOURCES', 'SPECS', 'SRPMS' ], function (dir, callback) {
-            mkdirp(path.join(BUILDROOT_DIR, dir), callback);
+            fullpath = path.join(BUILDROOT_DIR, dir);
+            config['BUILDROOT_'+ dir] = fullpath;
+            mkdirp(fullpath, callback);
         }, function (error) {
             callback(error);
         }, callback);
@@ -92,17 +102,33 @@ function prepareSpecFile(callback) {
                 callback(error);
             }
         }, function (content, callback) {
-            fs.writeFile(path.join(BUILDROOT_DIR, 'SPECS', config.name +'.spec'), content, callback);
+            fs.writeFile(path.join(BUILDROOT_DIR, 'SPECS', config.specfile), content, callback);
         }
     ], callback);
 }
 
-function packModule(callback) {
-    npm.load({}, function (error) {
-        console.log(error);
-    });
+function prepareSources(callback) {
+    async.series([
+        function (callback) {
+            exec('npm pack', { cwd: config.PACKAGE_DIR }, callback);
+        }, function (callback) {
+            mv(path.join(PACKAGE_DIR, config.source), path.join(config.BUILDROOT_SOURCES, config.source), callback);
+        }
+    ], callback);
+}
+
+function buildPackage(callback) {
+    var command;
     
-    callback(null);
+    command = ([
+        'rpmbuild',
+        '-ba',
+        '--buildroot', config.BUILDROOT_DIR,
+        config.specfile 
+    ]).join(' ');
+    
+    console.log(command);
+    exec(command, { cwd: config.BUILDROOT_SPECS }, callback);
 }
 
 function extend(target) {
