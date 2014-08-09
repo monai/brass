@@ -6,3 +6,5 @@ rm epel-release-6-8.noarch.rpm
 
 yum -y -q --nogpgcheck update
 yum -y -q --nogpgcheck groupinstall "Development Tools"
+
+sudo /etc/init.d/vboxadd setup

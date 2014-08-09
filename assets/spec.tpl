@@ -1,3 +1,5 @@
+%define _topdir <%= BUILDROOT_DIR %>
+
 Summary:        <%= summary %>
 Name:           <%= name %>
 Version:        <%= version %>
@@ -12,3 +14,14 @@ Source:         <%= source %>
 
 %description
 <%= description %>
+
+%prep
+%setup -n package
+
+%files
+%doc README*
+*
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+rm -rf $RPM_SOURCE_DIR/*
