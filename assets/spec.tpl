@@ -1,4 +1,6 @@
 %define _topdir <%= BUILDROOT_DIR %>
+%define _prefix <%= prefix %>
+%define _base   <%= name %>
 
 Summary:        <%= summary %>
 Name:           <%= name %>
@@ -18,10 +20,16 @@ Source:         <%= source %>
 %prep
 %setup -n package
 
-%files
-%doc README*
-*
+%install
+rm -rf %{buildroot}
+mkdir -p %{buildroot}/%{_prefix}/lib/%{_base}
+cp -a * %{buildroot}/%{_prefix}/lib/%{_base}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 rm -rf $RPM_SOURCE_DIR/*
+
+%files
+%doc %{_prefix}/lib/%{_base}/README*
+/*
+

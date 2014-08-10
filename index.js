@@ -57,7 +57,8 @@ function prepareConfig(callback) {
         release: 1,
         group: 'Applications/Internet',
         source: pkg.name +'-'+ pkg.version +'.tgz',
-        specfile: pkg.name +'.spec'
+        specfile: pkg.name +'.spec',
+        prefix: '/usr/local'
     };
     
     if (pkg.packager) {
@@ -108,13 +109,7 @@ function prepareSpecFile(callback) {
 }
 
 function prepareSources(callback) {
-    async.series([
-        function (callback) {
-            exec('npm pack', { cwd: config.PACKAGE_DIR }, callback);
-        }, function (callback) {
-            mv(path.join(PACKAGE_DIR, config.source), path.join(config.BUILDROOT_SOURCES, config.source), callback);
-        }
-    ], callback);
+    exec('npm pack '+ config.PACKAGE_DIR, { cwd: config.BUILDROOT_SOURCES }, callback);
 }
 
 function buildPackage(callback) {
@@ -123,11 +118,10 @@ function buildPackage(callback) {
     command = ([
         'rpmbuild',
         '-ba',
-        '--buildroot', config.BUILDROOT_DIR,
+        '--buildroot', path.join(config.BUILDROOT_DIR, 'tmp'),
         config.specfile 
     ]).join(' ');
     
-    console.log(command);
     exec(command, { cwd: config.BUILDROOT_SPECS }, callback);
 }
 
