@@ -3,6 +3,7 @@ var mv = require('mv');
 var ejs = require('ejs');
 var util = require('util');
 var path = require('path');
+var glob = require('glob');
 var exec = require('child_process').exec;
 var async = require('async');
 var rimraf = require('rimraf');
@@ -28,6 +29,7 @@ async.series([
     prepareBuildRoot,
     prepareSpecFile,
     prepareSources,
+    prepareFiles,
     buildPackage
 ], function (error, result) {
     if (error) {
@@ -109,7 +111,20 @@ function prepareSpecFile(callback) {
 }
 
 function prepareSources(callback) {
-    exec('npm pack '+ config.PACKAGE_DIR, { cwd: config.BUILDROOT_SOURCES }, callback);
+    async.series([
+        function (callback) {
+            var command = 'npm pack '+ config.PACKAGE_DIR;
+            exec(command, { cwd: config.BUILDROOT_SOURCES }, callback);
+        }, function (callback) {
+            var command = 'tar xvzf '+ path.join(config.BUILDROOT_SOURCES, config.source);
+            exec(command, { cwd: config.BUILDROOT_BUILD }, callback);
+        }
+    ], callback);
+}
+
+function prepareFiles(callback) {
+    // glob('**/*', { cwd: path.join(config.BUILDROOT_BUILD, 'package') })
+    callback(null);
 }
 
 function buildPackage(callback) {

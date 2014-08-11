@@ -9,20 +9,18 @@ Release:        <%= release %>
 License:        <%= license %>
 Group:          <%= group %>
 Source:         <%= source %>
-<% if ('url' in locals) { %>URL:            <%= url %><% } %>
-<% if ('distribution' in locals) { %>Distribution:    <%= distribution %><% } %>
-<% if ('vendor' in locals) { %>Vendor:         <%= vendor %><% } %>
-<% if ('packager' in locals) { %>Packager:       <%= packager %><% } %>
+<% if ('url' in locals)          { %>URL:            <%= url            %><% } %>
+<% if ('distribution' in locals) { %>Distribution:   <%= distribution   %><% } %>
+<% if ('vendor' in locals)       { %>Vendor:         <%= vendor         %><% } %>
+<% if ('packager' in locals)     { %>Packager:       <%= packager       %><% } %>
 
 %description
 <%= description %>
 
-%prep
-%setup -n package
-
 %install
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/%{_prefix}/lib/%{_base}
+cd package
 cp -a * %{buildroot}/%{_prefix}/lib/%{_base}
 
 %clean
