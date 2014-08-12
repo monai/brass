@@ -1,5 +1,4 @@
 %define _topdir <%= RPMBUILD_DIR %>
-%define _prefix <%= prefix %>
 %define _base   <%= name %>
 
 Summary:        <%= summary %>

@@ -6,9 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "bin": {
-    "theapp": "bin/theapp"
-  },
+  "bin": "bin/theapp",
   "author": "",
   "license": "ISC",
   "dependencies": {

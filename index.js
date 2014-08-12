@@ -54,13 +54,17 @@ function prepareConfig(callback) {
         config.vendor = pkg.author;
     }
     
+    if (pkg.bin) {
+        config.bin = pkg.bin;
+    }
+    
     defaults = {
         summary: 'Node.js module '+ pkg.name,
         release: 1,
         group: 'Applications/Internet',
         source: pkg.name +'-'+ pkg.version +'.tgz',
         specfile: pkg.name +'.spec',
-        prefix: '/usr/local'
+        prefix: '/usr'
     };
     
     if (pkg.packager) {
@@ -113,6 +117,8 @@ function prepareSpecFile(callback) {
 }
 
 function prepareSources(callback) {
+    config.sourcesDir = path.join(config.BUILDROOT_BUILD, 'package');
+    
     async.series([
         function (callback) {
             var command = 'npm pack '+ config.PACKAGE_DIR;
@@ -120,38 +126,67 @@ function prepareSources(callback) {
         }, function (callback) {
             var command = 'tar xvzf '+ path.join(config.BUILDROOT_SOURCES, config.source);
             exec(command, { cwd: config.BUILDROOT_BUILD }, callback);
+        }, function (callback) {
+            var command = 'npm install';
+            exec(command, { cwd: config.sourcesDir }, callback);
         }
     ], callback);
 }
 
 function prepareFiles(callback) {
-    var cwd = path.join(config.BUILDROOT_BUILD, 'package');
-    var destBase = path.join(config.BUILDROOT_DIR, config.prefix, 'lib', config.name);
+    config.binDir = path.join(config.BUILDROOT_DIR, config.prefix, 'bin');
+    config.installDir = path.join(config.BUILDROOT_DIR, config.prefix, 'lib', config.name);
     
-    mkdirp(destBase, function (error) {
-        if (error) {
-            return callback(error);
-        }
-        
-        glob('**/*', { cwd: cwd, mark: true }, function (error, files) {
-            if (error) {
-                return callback(error);
+    async.series([
+        function (callback) {
+            mkdirp(config.binDir, callback);
+        }, function (callback) {
+            mkdirp(config.installDir, callback);
+        }, function (callback) {
+            glob('**/*', { cwd: config.sourcesDir, mark: true }, function (error, files) {
+                if (error) {
+                    return callback(error);
+                }
+                
+                async.each(files, function (file, callback) {
+                    var src, dest;
+                    
+                    src = path.join(config.sourcesDir, file);
+                    dest = path.join(config.installDir, file);
+                    
+                    if (dest.lastIndexOf('/') === dest.length - 1) {
+                        mkdirp(dest, callback);
+                    } else {
+                        ncp(src, dest, callback);
+                    }
+                }, callback);
+            });
+        }, function (callback) {
+            var bin, bins, name, target;
+            
+            bin = config.bin;
+            bins = [];
+            if (typeof bin === 'string') {
+                bins.push({ name: config.name, target: bin });
+            } else {
+                for (var i in bin) if (bin.hasOwnProperty) {
+                    bins.push({ name: i, target: bin[i] });
+                }
             }
             
-            async.each(files, function (file, callback) {
-                var src, dest;
-                
-                src = path.join(cwd, file);
-                dest = path.join(destBase, file);
-                
-                if (dest.lastIndexOf('/') === dest.length - 1) {
-                    mkdirp(dest, callback);
-                } else {
-                    ncp(src, dest, callback);
-                }
+            async.each(bins, function (bin, callback) {
+                name = path.join(config.binDir, bin.name);
+                target = path.join(path.relative(config.binDir, config.installDir), bin.target);
+                fs.symlink(target, name, function (error) {
+                    if (error) {
+                        return callback(error);
+                    }
+                    
+                    fs.chmod(name, '400', callback);
+                });
             }, callback);
-        });
-    });
+        }
+    ], callback);
 }
 
 function buildPackage(callback) {
