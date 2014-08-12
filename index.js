@@ -1,5 +1,5 @@
 var fs = require('fs');
-var mv = require('mv');
+var ncp = require('ncp');
 var ejs = require('ejs');
 var util = require('util');
 var path = require('path');
@@ -12,21 +12,21 @@ var mkdirp = require('mkdirp');
 var CWD = process.cwd();
 var PACKAGER_DIR = __dirname;
 
-var BUILDROOT_NAME = 'packager_build';
+var RPMBUILD_NAME = 'packager_build';
 var TMP_PACKAGE_DIR = 'examples/theapp';
 
-var BUILDROOT_DIR = path.resolve(CWD, BUILDROOT_NAME);
+var RPMBUILD_DIR = path.resolve(CWD, RPMBUILD_NAME);
 var PACKAGE_DIR = path.resolve(CWD, TMP_PACKAGE_DIR);
 var PACKAGE_JSON = path.join(PACKAGE_DIR, 'package.json');
 
 var config = {
-    BUILDROOT_DIR: BUILDROOT_DIR,
+    RPMBUILD_DIR: RPMBUILD_DIR,
     PACKAGE_DIR: PACKAGE_DIR
 };
 
 async.series([
     prepareConfig,
-    prepareBuildRoot,
+    prepareBuildDirs,
     prepareSpecFile,
     prepareSources,
     prepareFiles,
@@ -76,28 +76,30 @@ function prepareConfig(callback) {
     callback(null);
 }
 
-function prepareBuildRoot(callback) {
+function prepareBuildDirs(callback) {
     var fullpath;
     
-    rimraf(BUILDROOT_DIR, function (error) {
-        if (error) {
-            return callback(error);
-        }
-        
-        async.each([ 'BUILD', 'RPMS', 'SOURCES', 'SPECS', 'SRPMS' ], function (dir, callback) {
-            fullpath = path.join(BUILDROOT_DIR, dir);
-            config['BUILDROOT_'+ dir] = fullpath;
+    async.series([
+        function (callback) {
+            rimraf(RPMBUILD_DIR, callback);
+        }, function (callback) {
+            fullpath = path.join(RPMBUILD_DIR, 'tmp');
+            config.BUILDROOT_DIR = fullpath;
             mkdirp(fullpath, callback);
-        }, function (error) {
-            callback(error);
-        }, callback);
-    });
+        }, function (callback) {
+            async.each([ 'BUILD', 'RPMS', 'SOURCES', 'SPECS', 'SRPMS' ], function (dir, callback) {
+                fullpath = path.join(RPMBUILD_DIR, dir);
+                config['BUILDROOT_'+ dir] = fullpath;
+                mkdirp(fullpath, callback);
+            }, callback);
+        }
+    ], callback);
 }
 
 function prepareSpecFile(callback) {
     async.waterfall([
         function (callback) {
-            fs.readFile('assets/spec.tpl', 'utf8', callback);
+            fs.readFile(path.join(PACKAGER_DIR, 'assets/spec.tpl'), 'utf8', callback);
         }, function (content, callback) {
             try {
                 callback(null, ejs.render(content, config));
@@ -105,7 +107,7 @@ function prepareSpecFile(callback) {
                 callback(error);
             }
         }, function (content, callback) {
-            fs.writeFile(path.join(BUILDROOT_DIR, 'SPECS', config.specfile), content, callback);
+            fs.writeFile(path.join(RPMBUILD_DIR, 'SPECS', config.specfile), content, callback);
         }
     ], callback);
 }
@@ -123,8 +125,33 @@ function prepareSources(callback) {
 }
 
 function prepareFiles(callback) {
-    // glob('**/*', { cwd: path.join(config.BUILDROOT_BUILD, 'package') })
-    callback(null);
+    var cwd = path.join(config.BUILDROOT_BUILD, 'package');
+    var destBase = path.join(config.BUILDROOT_DIR, config.prefix, 'lib', config.name);
+    
+    mkdirp(destBase, function (error) {
+        if (error) {
+            return callback(error);
+        }
+        
+        glob('**/*', { cwd: cwd, mark: true }, function (error, files) {
+            if (error) {
+                return callback(error);
+            }
+            
+            async.each(files, function (file, callback) {
+                var src, dest;
+                
+                src = path.join(cwd, file);
+                dest = path.join(destBase, file);
+                
+                if (dest.lastIndexOf('/') === dest.length - 1) {
+                    mkdirp(dest, callback);
+                } else {
+                    ncp(src, dest, callback);
+                }
+            }, callback);
+        });
+    });
 }
 
 function buildPackage(callback) {
@@ -133,7 +160,7 @@ function buildPackage(callback) {
     command = ([
         'rpmbuild',
         '-ba',
-        '--buildroot', path.join(config.BUILDROOT_DIR, 'tmp'),
+        '--buildroot', config.BUILDROOT_DIR,
         config.specfile 
     ]).join(' ');
     
