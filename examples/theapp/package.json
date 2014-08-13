@@ -11,5 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "connect": "^3.1.0"
+  },
+  "packager": {
+    "daemon": "bin/theapp",
+    "description": "This is the long description of the application."
   }
 }

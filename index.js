@@ -27,9 +27,10 @@ var config = {
 async.series([
     prepareConfig,
     prepareBuildDirs,
-    prepareSpecFile,
     prepareSources,
     prepareFiles,
+    prepareDaemonFile,
+    prepareSpecFile,
     buildPackage
 ], function (error, result) {
     if (error) {
@@ -100,22 +101,6 @@ function prepareBuildDirs(callback) {
     ], callback);
 }
 
-function prepareSpecFile(callback) {
-    async.waterfall([
-        function (callback) {
-            fs.readFile(path.join(PACKAGER_DIR, 'assets/spec.tpl'), 'utf8', callback);
-        }, function (content, callback) {
-            try {
-                callback(null, ejs.render(content, config));
-            } catch (error) {
-                callback(error);
-            }
-        }, function (content, callback) {
-            fs.writeFile(path.join(RPMBUILD_DIR, 'SPECS', config.specfile), content, callback);
-        }
-    ], callback);
-}
-
 function prepareSources(callback) {
     config.sourcesDir = path.join(config.BUILDROOT_BUILD, 'package');
     
@@ -182,9 +167,88 @@ function prepareFiles(callback) {
                         return callback(error);
                     }
                     
-                    fs.chmod(name, '400', callback);
+                    fs.chmod(name, '755', callback);
                 });
             }, callback);
+        }
+    ], callback);
+}
+
+function prepareDaemonFile(callback) {
+    var keys, daemon, sbinTarget, initScriptTarget, content;
+    
+    daemon = config.daemon;
+    if ( ! daemon) {
+        return callback(null);
+    }
+    
+    sbinTarget = path.join(config.prefix, 'sbin');
+    
+    config.sbinDir = path.join(config.BUILDROOT_DIR, sbinTarget);
+    config.configDir = path.join(config.BUILDROOT_DIR, 'etc/init.d');
+    
+    initScriptTarget = path.join(config.configDir, config.name);
+    
+    if (typeof daemon === 'string') {
+        daemon = { name: config.name, target: daemon };
+    } else {
+        keys = Object.keys(daemon);
+        daemon = { name: keys[0], target: daemon[keys[0]] };
+    }
+    
+    config.daemonName = daemon.name;
+    config.daemonTarget = path.join(sbinTarget, daemon.name);
+    
+    async.series([
+        function (callback) {
+            mkdirp(config.sbinDir, callback);
+        }, function (callback) {
+            mkdirp(config.configDir, callback);
+        }, function (callback) {
+            var name, target;
+            
+            name = path.join(config.sbinDir, daemon.name);
+            target = path.join(path.relative(config.sbinDir, config.installDir), config.daemon);
+            
+            fs.symlink(target, name, function (error) {
+                if (error) {
+                    return callback(error);
+                }
+                
+                fs.chmod(name, '755', callback);
+            });
+        }, function (callback) {
+            fs.readFile(path.join(PACKAGER_DIR, 'assets/initscript'), 'utf8', function (error, _content) {
+                content = _content;
+                callback(error);
+            });
+        }, function (callback) {
+            try {
+                content = ejs.render(content, config);
+                callback(null);
+            } catch (error) {
+                callback(error);
+            }
+        }, function (callback) {
+            fs.writeFile(initScriptTarget, content, callback);
+        }, function (callback) {
+            fs.chmod(initScriptTarget, '755', callback);
+        }
+    ], callback);
+}
+
+function prepareSpecFile(callback) {
+    async.waterfall([
+        function (callback) {
+            fs.readFile(path.join(PACKAGER_DIR, 'assets/spec.tpl'), 'utf8', callback);
+        }, function (content, callback) {
+            try {
+                callback(null, ejs.render(content, config));
+            } catch (error) {
+                callback(error);
+            }
+        }, function (content, callback) {
+            fs.writeFile(path.join(RPMBUILD_DIR, 'SPECS', config.specfile), content, callback);
         }
     ], callback);
 }
