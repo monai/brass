@@ -193,19 +193,7 @@ function prepareDaemonFile(callback) {
         function (callback) {
             mkdirp(config.configDir, callback);
         }, function (callback) {
-            fs.readFile(path.join(PACKAGER_DIR, 'assets/initscript'), 'utf8', function (error, _content) {
-                content = _content;
-                callback(error);
-            });
-        }, function (callback) {
-            try {
-                content = ejs.render(content, config);
-                callback(null);
-            } catch (error) {
-                callback(error);
-            }
-        }, function (callback) {
-            fs.writeFile(initScriptTarget, content, callback);
+            makeFileFromTemplate(path.join(PACKAGER_DIR, 'assets/initscript'), initScriptTarget, callback);
         }, function (callback) {
             fs.chmod(initScriptTarget, '755', callback);
         }
@@ -213,19 +201,11 @@ function prepareDaemonFile(callback) {
 }
 
 function prepareSpecFile(callback) {
-    async.waterfall([
-        function (callback) {
-            fs.readFile(path.join(PACKAGER_DIR, 'assets/spec.tpl'), 'utf8', callback);
-        }, function (content, callback) {
-            try {
-                callback(null, ejs.render(content, config));
-            } catch (error) {
-                callback(error);
-            }
-        }, function (content, callback) {
-            fs.writeFile(path.join(RPMBUILD_DIR, 'SPECS', config.specfile), content, callback);
-        }
-    ], callback);
+    makeFileFromTemplate(path.join(
+        PACKAGER_DIR, 'assets/spec.tpl'),
+        path.join(RPMBUILD_DIR, 'SPECS', config.specfile),
+        callback
+    );
 }
 
 function buildPackage(callback) {
@@ -275,4 +255,26 @@ function makeBinSymlink(base, fileMap, callback) {
         
         fs.chmod(name, '755', callback);
     });
+}
+
+function makeFileFromTemplate(src, dest, callback) {
+    var content;
+    
+    async.series([
+        function (callback) {
+            fs.readFile(src, 'utf8', function (error, _content) {
+                content = _content;
+                callback(error);
+            });
+        }, function (callback) {
+            try {
+                content = ejs.render(content, config);
+                callback(null);
+            } catch (error) {
+                callback(error);
+            }
+        }, function (callback) {
+            fs.writeFile(dest, content, callback);
+        }
+    ], callback);
 }
