@@ -27,13 +27,13 @@ Requires(postun): initscripts
 
 %preun
 if [ $1 -eq 0 ]; then
-    /sbin/service <%= daemonName %> stop >/dev/null 2>&1
+    /sbin/service <%= daemonName %> stop >/dev/null 2>&1 || true
     /sbin/chkconfig --del <%= daemonName %>
 fi
 
 %postun
 if [ $1 -ge 1 ]; then
-    /sbin/service <%= daemonName %> condrestart >/dev/null 2>&1 || :
+    /sbin/service <%= daemonName %> condrestart >/dev/null 2>&1 || true
 fi
 <% } %>
 

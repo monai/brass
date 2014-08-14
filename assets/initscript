@@ -82,10 +82,10 @@ force_reload() {
 }
 
 rh_status() {
-    pid=$(_pid)
+    pid=$(cat $pidfile 2>/dev/null)
+    
     if [ -n "$pid" ]; then
         echo "$prog (pid  $pid) is running..."
-        return 0
     else
         echo "$prog is stopped"
         
