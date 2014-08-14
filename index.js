@@ -1,1 +1,1 @@
-require('./lib/packager');
+module.exports = require('./lib/packager');
