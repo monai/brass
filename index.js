@@ -29,6 +29,7 @@ async.series([
     prepareBuildDirs,
     prepareSources,
     prepareFiles,
+    prepareBinaries,
     prepareDaemonFile,
     prepareSpecFile,
     buildPackage
@@ -119,19 +120,14 @@ function prepareSources(callback) {
 }
 
 function prepareFiles(callback) {
-    config.binDir = path.join(config.BUILDROOT_DIR, config.prefix, 'bin');
     config.installDir = path.join(config.BUILDROOT_DIR, config.prefix, 'lib', config.name);
     
     async.series([
         function (callback) {
-            mkdirp(config.binDir, callback);
-        }, function (callback) {
             mkdirp(config.installDir, callback);
         }, function (callback) {
             glob('**/*', { cwd: config.sourcesDir, mark: true }, function (error, files) {
-                if (error) {
-                    return callback(error);
-                }
+                if (error) return callback(error);
                 
                 async.each(files, function (file, callback) {
                     var src, dest;
@@ -146,77 +142,56 @@ function prepareFiles(callback) {
                     }
                 }, callback);
             });
+        }
+    ], callback);
+}
+
+function prepareBinaries(callback) {
+    var binTarget, sbinTarget, daemon;
+    
+    config.binTarget = path.join(config.prefix, 'bin');
+    config.sbinTarget = path.join(config.prefix, 'sbin');
+    
+    config.binDir = path.join(config.BUILDROOT_DIR, config.binTarget);
+    config.sbinDir = path.join(config.BUILDROOT_DIR, config.sbinTarget);
+    
+    async.series([
+        function (callback) {
+            async.each([
+                config.binDir,
+                config.sbinDir
+            ], mkdirp, callback);
         }, function (callback) {
-            var bin, bins, name, target;
-            
-            bin = config.bin;
-            bins = [];
-            if (typeof bin === 'string') {
-                bins.push({ name: config.name, target: bin });
-            } else {
-                for (var i in bin) if (bin.hasOwnProperty) {
-                    bins.push({ name: i, target: bin[i] });
-                }
-            }
-            
+            var bins = unwrapFileList(config.bin, config.name);
             async.each(bins, function (bin, callback) {
-                name = path.join(config.binDir, bin.name);
-                target = path.join(path.relative(config.binDir, config.installDir), bin.target);
-                fs.symlink(target, name, function (error) {
-                    if (error) {
-                        return callback(error);
-                    }
-                    
-                    fs.chmod(name, '755', callback);
-                });
+                makeBinSymlink(config.binDir, bin, callback);
             }, callback);
+        }, function (callback) {
+            daemon = config.daemon;
+            if ( ! daemon) callback(null);
+            
+            daemon = unwrapFileList(daemon, config.name);
+            daemon = config.daemon = daemon[0];
+            makeBinSymlink(config.sbinDir, daemon, callback);
         }
     ], callback);
 }
 
 function prepareDaemonFile(callback) {
-    var keys, daemon, sbinTarget, initScriptTarget, content;
+    var daemon, initScriptTarget, content;
     
     daemon = config.daemon;
-    if ( ! daemon) {
-        return callback(null);
-    }
-    
-    sbinTarget = path.join(config.prefix, 'sbin');
-    
-    config.sbinDir = path.join(config.BUILDROOT_DIR, sbinTarget);
-    config.configDir = path.join(config.BUILDROOT_DIR, 'etc/init.d');
-    
-    initScriptTarget = path.join(config.configDir, config.name);
-    
-    if (typeof daemon === 'string') {
-        daemon = { name: config.name, target: daemon };
-    } else {
-        keys = Object.keys(daemon);
-        daemon = { name: keys[0], target: daemon[keys[0]] };
-    }
+    if ( ! daemon) return callback(null);
     
     config.daemonName = daemon.name;
-    config.daemonTarget = path.join(sbinTarget, daemon.name);
+    config.daemonTarget = path.join(config.sbinTarget, daemon.name);
+    
+    config.configDir = path.join(config.BUILDROOT_DIR, 'etc/init.d');
+    initScriptTarget = path.join(config.configDir, config.name);
     
     async.series([
         function (callback) {
-            mkdirp(config.sbinDir, callback);
-        }, function (callback) {
             mkdirp(config.configDir, callback);
-        }, function (callback) {
-            var name, target;
-            
-            name = path.join(config.sbinDir, daemon.name);
-            target = path.join(path.relative(config.sbinDir, config.installDir), config.daemon);
-            
-            fs.symlink(target, name, function (error) {
-                if (error) {
-                    return callback(error);
-                }
-                
-                fs.chmod(name, '755', callback);
-            });
         }, function (callback) {
             fs.readFile(path.join(PACKAGER_DIR, 'assets/initscript'), 'utf8', function (error, _content) {
                 content = _content;
@@ -275,4 +250,29 @@ function extend(target) {
         }
     }
     return target;
+}
+
+function unwrapFileList(obj, defaultName) {
+    var out = [];
+    if (typeof obj === 'string') {
+        out.push({ name: defaultName, target: obj });
+    } else {
+        for (var i in obj) if (obj.hasOwnProperty) {
+            out.push({ name: i, target: obj[i] });
+        }
+    }
+    return out;
+}
+
+function makeBinSymlink(base, fileMap, callback) {
+    var name, target;
+    name = path.join(base, fileMap.name);
+    target = path.join(path.relative(base, config.installDir), fileMap.target);
+    fs.symlink(target, name, function (error) {
+        if (error) {
+            return callback(error);
+        }
+        
+        fs.chmod(name, '755', callback);
+    });
 }
