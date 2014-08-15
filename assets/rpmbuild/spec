@@ -46,4 +46,4 @@ fi
 %config
 /etc/init.d/*
 <% } %>
-/<%= prefix %>/*
+<%= prefix %>/*
