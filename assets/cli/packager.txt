@@ -1,0 +1,25 @@
+Usage: packager <type> [options] [package]
+
+Description:
+
+  Build Node.js project to a native OS package.
+
+Type:
+
+  -r, --rpm             create RPM package
+  -d, --deb             create DEB package
+  
+Options:
+
+  -S, --daemon=sysv     craete System V style init script
+  -D, --daemon=systemd  create systemd style init script
+  -U, --daemon=upstart  create Upstart style init script
+  
+  -w, --work-dir        directory where to build package
+  
+  -v, --version         output version number
+  -h, --help            output usage information
+
+Package:
+
+  Path to package or current working directory will be used if empty.
