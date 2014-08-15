@@ -6,12 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": "bin/packager",
   "author": "monai",
   "license": "ISC",
   "dependencies": {
     "async": "^0.9.0",
     "ejs": "^1.0.0",
     "glob": "~4.0.5",
+    "minimist": "^1.1.0",
     "mkdirp": "^0.5.0",
     "mv": "^2.0.3",
     "ncp": "~0.6.0",
