@@ -1,19 +1,13 @@
-Usage: packager <type> [options] [package]
+Usage: packager [options] [package]
 
 Description:
 
   Build Node.js project to a native OS package.
 
-Type:
-
-  -r, --rpm             create RPM package
-  -d, --deb             create DEB package
-  
 Options:
-
-  -S, --daemon=sysv     craete System V style init script
-  -D, --daemon=systemd  create systemd style init script
-  -U, --daemon=upstart  create Upstart style init script
+  
+  --p.key=val           overrides "packager" object in package.json,
+                        e.g. --p.summary="Awesome module"
   
   -w, --work-dir        directory where to build package
   
