@@ -16,24 +16,24 @@ Source:         <%= source %>
 %description
 <%= description %>
 
-<% if ('daemon' in locals) { %>
+<% if (locals.daemon.type === 'sysv') { %>
 Requires(post): chkconfig
 Requires(preun): chkconfig
 Requires(preun): initscripts
 Requires(postun): initscripts
 
 %post
-/sbin/chkconfig --add <%= daemonName %>
+/sbin/chkconfig --add <%= daemon.name %>
 
 %preun
 if [ $1 -eq 0 ]; then
-    /sbin/service <%= daemonName %> stop >/dev/null 2>&1 || true
-    /sbin/chkconfig --del <%= daemonName %>
+    /sbin/service <%= daemon.name %> stop >/dev/null 2>&1 || true
+    /sbin/chkconfig --del <%= daemon.name %>
 fi
 
 %postun
 if [ $1 -ge 1 ]; then
-    /sbin/service <%= daemonName %> condrestart >/dev/null 2>&1 || true
+    /sbin/service <%= daemon.name %> condrestart >/dev/null 2>&1 || true
 fi
 <% } %>
 
@@ -42,7 +42,7 @@ fi
 # rm -rf %{sourcedir}/*
 
 %files
-<% if ('configDir' in locals ) { %>
+<% if (locals.daemon.type === 'sysv') { %>
 %config
 /etc/init.d/*
 <% } %>

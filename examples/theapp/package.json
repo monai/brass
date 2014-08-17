@@ -14,7 +14,11 @@
   },
   "packager": {
     "type": "rpm",
-    "daemon": "bin/theapp",
+    "daemon": {
+      "type": "sysv",
+      "name": "theapp",
+      "target": "bin/theapp"
+    },
     "description": "This is the long description of the application."
   }
 }

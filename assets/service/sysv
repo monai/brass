@@ -22,10 +22,10 @@
 # Source function library.
 . /etc/init.d/functions
 
-exec="<%= daemonTarget %>"
+exec="<%= daemon.systemTarget %>"
 prog="<%= name %>"
 <% if ('daemonConfigDir' in locals) { %>
-config="<%= daemonConfigDir %>"
+config="<%= daemon.configDir %>"
 <% } %>
 <% if ('user' in locals) { %>
 user="<%= user %>"
@@ -42,7 +42,7 @@ lockfile="/var/lock/subsys/$prog"
 
 start() {
     [ -x $exec ] || exit 5
-    <% if ('daemonConfigDir' in locals) { %>[ -e $config ] || exit 6<% } %>
+    <% if ('daemon.configDir' in locals) { %>[ -e $config ] || exit 6<% } %>
     echo -n $"Starting $prog: "
     
     su - $user -c "NODE_ENV=production $exec $config >/dev/null 2>&1 & echo \$! > $pidfile" &&  echo_success || echo_failure
