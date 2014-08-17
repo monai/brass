@@ -35,6 +35,20 @@ fi
 if [ $1 -ge 1 ]; then
     /sbin/service <%= daemon.name %> condrestart >/dev/null 2>&1 || true
 fi
+<% } else if (locals.daemon.type === 'systemd') { %>
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
+BuildRequires: systemd
+
+%post
+%systemd_post <%= daemon.name %>.service
+
+%preun
+%systemd_preun <%= daemon.name %>.service
+
+%postun
+%systemd_postun_with_restart <%= daemon.name %>.service 
 <% } %>
 
 %clean
@@ -45,5 +59,9 @@ fi
 <% if (locals.daemon.type === 'sysv') { %>
 %config
 /etc/init.d/*
+<% } else if (locals.daemon.type === 'systemd') { %>
+/lib/systemd/system/*
 <% } %>
-<%= prefix %>/*
+/usr/bin/*
+/usr/lib/*
+/usr/sbin/*

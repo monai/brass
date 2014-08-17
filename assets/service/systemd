@@ -1,0 +1,18 @@
+[Unit]
+Description=<%= summary %>
+Requires=network.target
+After=network.target
+
+[Service]
+ExecStart=<%= daemon.systemTarget %>
+PIDFile=/var/run/<%= daemon.name %>.pid
+Environment="NODE_ENV=production"
+<% if (locals.daemon.user) { %>
+User=<%= daemon.user %>
+<% } %>
+<% if (locals.daemon.group) { %>
+Group=<%= daemon.group %>
+<% } %>
+
+[Install]
+WantedBy=multi-user.target
