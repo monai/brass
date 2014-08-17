@@ -1,12 +1,13 @@
 #!/bin/sh
 
 centos64() {
-    sudo /etc/init.d/vboxadd setup
-    
     install_epel http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
     
     yum -y -q --nogpgcheck update
     yum -y -q --nogpgcheck groupinstall "Development Tools"
+    yum -y -q --nogpgcheck install kernel-devel
+    
+    /etc/init.d/vboxadd setup
 }
 
 centos70() {
@@ -14,6 +15,9 @@ centos70() {
     
     yum -y -q --nogpgcheck groups mark install "Development Tools"
     yum -y -q --nogpgcheck update
+    yum -y -q --nogpgcheck install kernel-devel
+    
+    /etc/init.d/vboxadd setup
 }
 
 centos() {
