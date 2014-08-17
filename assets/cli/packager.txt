@@ -11,6 +11,7 @@ Options:
   
   -w, --work-dir        directory where to build package
   
+  -V, --verbose         verbose oputput
   -v, --version         output version number
   -h, --help            output usage information
 
