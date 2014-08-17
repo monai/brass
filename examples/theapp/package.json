@@ -15,7 +15,7 @@
   "packager": {
     "type": "rpm",
     "daemon": {
-      "type": "sysv",
+      "type": "systemd",
       "name": "theapp",
       "target": "bin/theapp"
     },
