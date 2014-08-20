@@ -62,4 +62,4 @@ BuildRequires: systemd
 <% } else if (locals.daemon.type === 'systemd') { %>
 /lib/systemd/system/*
 <% } %>
-<%= fileList %>
+<%= targetFileList %>

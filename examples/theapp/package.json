@@ -19,6 +19,16 @@
       "name": "theapp",
       "target": "bin/theapp"
     },
+    "files": [
+      {
+        "target": "/var",
+        "files": "**/*",
+        "cwd": "var"
+      },
+      "*",
+      "bin/*",
+      "node_modules/**/*"
+    ],
     "description": "This is the long description of the application."
   }
 }
