@@ -1,9 +1,6 @@
 var packager = require('../../');
 
-var emitter = packager({
-    workDir: '.',
-    package: '.'
-}, function (error) {
+var emitter = packager(function (error) {
     console.log('finish');
 });
 
