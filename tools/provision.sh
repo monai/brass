@@ -11,7 +11,7 @@ centos64() {
 }
 
 centos70() {
-    install_epel http://download.fedoraproject.org/pub/epel/beta/7/x86_64/epel-release-7-0.2.noarch.rpm
+    install_epel http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-1.noarch.rpm
     
     yum -y -q --nogpgcheck groups mark install "Development Tools"
     yum -y -q --nogpgcheck update
