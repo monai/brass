@@ -1,4 +1,4 @@
-Usage: packager [options] [package]
+Usage: brass [options] [package]
 
 Description:
 
@@ -6,8 +6,8 @@ Description:
 
 Options:
   
-  --p.key=val           overrides "packager" object in package.json,
-                        e.g. --p.summary="Awesome module"
+  --D.key=val           overrides "brass" object in package.json,
+                        e.g. --D.summary="Awesome module"
   
   -w, --work-dir        directory where to build package
   

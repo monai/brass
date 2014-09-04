@@ -1,4 +1,4 @@
-# packager
+# brass
 
 Build Node.js project to a native OS package.
 
@@ -6,31 +6,31 @@ Build Node.js project to a native OS package.
 
 Install as dependency:
 
-`npm install packager`
+`npm install brass`
 
 Install as CLI tool:
 
-`npm install -g packager`
+`npm install -g brass`
 
 ## How to use
 
 ### CLI
 
-Run `packager` in your project directory where file `package.json` is located.
+Run `brass` in your project directory where file `package.json` is located.
 
-Run `packager -h` for usage.
+Run `brass -h` for usage.
 
 ### Programmatically
 
 ```js
-var packager = require('packager');
+var brass = require('brass');
 var options, emitter;
 
 options = {
   workDir: '.'
 };
 
-emitter = packager(options, function (error) {
+emitter = brass(options, function (error) {
     console.log('finish');
 });
 
@@ -41,7 +41,7 @@ emitter.on('info', function (data) {
 
 ## API
 
-### packager([options], [callback])
+### brass([options], [callback])
 
 - `options Object` - an optional object that supersedes options from `package.json`.
 - `callback(error) Function` - an optional callback function to run once package building have completed.
@@ -51,7 +51,7 @@ emitter.on('info', function (data) {
 Options are read from several locations and merged key-wise in particular order:
 
 1. Standard package.json [properties](https://www.npmjs.org/doc/files/package.json.html) (`pkg`).
-2. Object `packager` in package.json file.
+2. Object `brass` in package.json file.
 3. `options` argument in API function or CLI overrides.
 
 ### Example
@@ -62,7 +62,7 @@ For given package.json file
 {
   "name": "theapp",
   "version": "0.0.0",
-  "packager": {
+  "brass": {
     "name": "myapp"
   }
 }
@@ -71,7 +71,7 @@ For given package.json file
 and API call
 
 ```js
-packager({ version: "0.0.1" });
+brass({ version: "0.0.1" });
 ```
 
 final options object would be:

@@ -1,6 +1,6 @@
-var packager = require('../../');
+var brass = require('../../');
 
-var emitter = packager(function (error) {
+var emitter = brass(function (error) {
     console.log('finish');
 });
 

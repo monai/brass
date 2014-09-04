@@ -1,5 +1,5 @@
 {
-  "name": "packager",
+  "name": "brass",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "packager": "bin/packager.js"
+    "brass": "bin/brass.js"
   },
   "author": "monai",
   "license": "ISC",

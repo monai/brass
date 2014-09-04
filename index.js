@@ -1,1 +1,1 @@
-module.exports = require('./lib/packager');
+module.exports = require('./lib/brass');
