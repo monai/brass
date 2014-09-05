@@ -9,6 +9,15 @@
   "bin": {
     "brass": "bin/brass.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:monai/brass.git"
+  },
+  "keywords": [
+    "package",
+    "rpm",
+    "deb"
+  ],
   "author": "monai",
   "license": "ISC",
   "dependencies": {
