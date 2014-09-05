@@ -6,8 +6,8 @@ Description:
 
 Options:
   
-  --D.key=val           overrides "brass" object in package.json,
-                        e.g. --D.summary="Awesome module"
+  --o.key=val           overrides "brass" object in package.json,
+                        e.g. --o.summary="Awesome module"
   
   -w, --work-dir        directory where to build package
   
