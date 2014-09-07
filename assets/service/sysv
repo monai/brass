@@ -30,9 +30,6 @@ config="<%= daemon.configDir %>"
 <% if (locals.daemon.user) { %>
 user="<%= daemon.user %>"<% } else { %>user="root"
 <% } %>
-<% if (locals.daemon.group) { %>
-group="<%= daemon.group %>"<% } else { %>group="root"
-<% } %>
 
 [ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
 
@@ -46,7 +43,7 @@ start() {
     <% if ('daemon.configDir' in locals) { %>[ -e $config ] || exit 6<% } %>
     echo -n $"Starting $prog: "
     
-    su - $user -g $group -c "NODE_ENV=production $exec $config >/dev/null 2>&1 & echo \$! > $pidfile" &&  echo_success || echo_failure
+    su - $user -c "NODE_ENV=production $exec $config >/dev/null 2>&1 & echo \$! > $pidfile" &&  echo_success || echo_failure
     
     retval=$?
     echo

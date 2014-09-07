@@ -106,6 +106,10 @@ Binaries and daemon:
   - `daemon.type` - valid type: (systemd, sysv).
   - `daemon.name` - command name that will be placed into `prefix/sbin`.
   - `daemon.target` - local filename that the command will be linking to.
+  - `daemon.user`- run process as another user.
+
+File mapping:
+
 - `files` - an array of glob patterns to copy matched files into `prefix/lib/name` directory
   - more info about [glob patterns](https://www.npmjs.org/package/glob)
 - files can be mapped outside of `prefix/lib/name` directory:
