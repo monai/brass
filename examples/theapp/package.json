@@ -17,7 +17,8 @@
     "daemon": {
       "type": "systemd",
       "name": "theapp",
-      "target": "bin/theapp"
+      "target": "bin/theapp",
+      "user": "vagrant"
     },
     "files": [
       {
