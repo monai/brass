@@ -43,9 +43,17 @@ start() {
     <% if ('daemon.configDir' in locals) { %>[ -e $config ] || exit 6<% } %>
     echo -n $"Starting $prog: "
     
-    su - $user -c "NODE_ENV=production $exec $config >/dev/null 2>&1 & echo \$! > $pidfile" && echo_success || echo_failure
+    tmp=$(mktemp)
+    chmod 666 $tmp
+    su - $user -c "NODE_ENV=production $exec $config >/dev/null 2>&1 & echo \$! > $tmp"
+    pid=$(cat $tmp)
+    echo $pid > $pidfile
+    rm -f $tmp
+    
+    ps -p $pid >/dev/null 2>&1
     
     retval=$?
+    [ $retval -eq 0 ] && echo_success || echo_failure
     echo
     [ $retval -eq 0 ] && touch $lockfile
     return $retval
