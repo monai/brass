@@ -28,7 +28,8 @@
       },
       "*",
       "bin/*",
-      "node_modules/**/*"
+      "node_modules/**/*",
+      "!var/"
     ],
     "description": "This is the long description of the application."
   }
