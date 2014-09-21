@@ -30,7 +30,9 @@
         "target": "/etc",
         "files": "*",
         "cwd": "config",
-        "type": "config"
+        "type": "config",
+        "noreplace": true,
+        "attr": [ "0777", "root", null ]
       },
       "*",
       "bin/*",
