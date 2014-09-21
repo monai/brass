@@ -57,7 +57,6 @@ BuildRequires: systemd
 
 %files
 <% if (locals.daemon.type === 'sysv') { %>
-%config
 /etc/init.d/*
 <% } else if (locals.daemon.type === 'systemd') { %>
 /lib/systemd/system/*
