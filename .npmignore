@@ -1,0 +1,9 @@
+node_modules
+tools
+brass_build
+.vagrant
+.gitignore
+.npmignore
+.travis.yml
+*.tgz
+Vagrantfile
