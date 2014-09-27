@@ -1,5 +1,8 @@
 # brass
 
+[![Build Status](http://img.shields.io/travis/monai/node-imagesearch/develop.svg)](https://travis-ci.org/monai/brass)
+[![NPM Version](http://img.shields.io/npm/v/imagesearch.svg)](https://www.npmjs.org/package/brass)
+
 Build Node.js project to a native OS package.
 
 ## Installation
