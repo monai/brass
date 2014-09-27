@@ -14,7 +14,7 @@
   },
   "brass": {
     "type": "rpm",
-    "daemon": {
+    "service": {
       "type": "systemd",
       "name": "theapp",
       "target": "bin/theapp",

@@ -4,11 +4,11 @@ Requires=network.target
 After=network.target
 
 [Service]
-ExecStart=<%= daemon.systemTarget %>
-PIDFile=/var/run/<%= daemon.name %>.pid
+ExecStart=<%= service.systemTarget %>
+PIDFile=/var/run/<%= service.name %>.pid
 Environment="NODE_ENV=production"
-<% if (locals.daemon.user) { %>
-User=<%= daemon.user %>
+<% if (locals.service.user) { %>
+User=<%= service.user %>
 <% } %>
 
 [Install]
