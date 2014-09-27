@@ -30,7 +30,7 @@ options = {
   workDir: '.'
 };
 
-emitter = brass(options, function (error) {
+emitter = brass.build(options, function (error) {
     console.log('finish');
 });
 
@@ -41,7 +41,7 @@ emitter.on('info', function (data) {
 
 ## API
 
-### brass([options], [callback])
+### build([options], [callback])
 
 - `options Object` - an optional object that supersedes options from `package.json`.
 - `callback(error) Function` - an optional callback function to run once package building have completed.
@@ -71,7 +71,7 @@ For given package.json file
 and API call
 
 ```js
-brass({ version: "0.0.1" });
+brass.build({ version: "0.0.1" });
 ```
 
 final options object would be:
