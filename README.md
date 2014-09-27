@@ -110,12 +110,23 @@ Binaries and service:
 
 File mapping:
 
-- `files` - an array of glob patterns to copy matched files into `prefix/lib/name` directory
-  - more info about [glob patterns](https://www.npmjs.org/package/glob)
-- files can be mapped outside of `prefix/lib/name` directory:
-  - `files[].taret` - target directory to copy files into.
-  - `files[].files` - glob pattern.
-  - `files[].cwd` - directory to start [globbing from](https://github.com/isaacs/node-glob#options).
+- `files` - an array of map objects.
+ - `files[].target` - directory to copy files to.
+ - `files[].files` - glob pattern.
+ - `files[].cwd` - directory to start [globbing from](https://github.com/isaacs/node-glob#options).
+ - `files[].type` - 'config' for configuration files or empty for normal files.
+ - `files[].noreplace` - don't replace files on package upgrade, it can be used in combination with `type = config`.
+ - `files[].attr` - an file permission array `[ chmod, user, group ]`.
+
+Instead of map object a shorthand expression can be used. Simple glob pattern, e.g. `**\*.js` is equal to:
+
+```json
+{
+  "target": "/usr/lib/<name>",
+  "files": "**/*.js",
+  "cwd": "."
+}
+```
 
 Optional RPM [properties](http://www.rpm.org/max-rpm/s1-rpm-build-creating-spec-file.html):
 
