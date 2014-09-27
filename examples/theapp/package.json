@@ -14,10 +14,11 @@
   },
   "brass": {
     "type": "rpm",
-    "daemon": {
+    "service": {
       "type": "systemd",
       "name": "theapp",
-      "target": "bin/theapp"
+      "target": "bin/theapp",
+      "user": "vagrant"
     },
     "files": [
       {
@@ -25,9 +26,19 @@
         "files": "**/*",
         "cwd": "var"
       },
+      {
+        "target": "/etc",
+        "files": "*",
+        "cwd": "config",
+        "type": "config",
+        "noreplace": true,
+        "attr": [ "0777", "root", null ]
+      },
       "*",
       "bin/*",
-      "node_modules/**/*"
+      "node_modules/**/*",
+      "!config",
+      "!var/"
     ],
     "description": "This is the long description of the application."
   }

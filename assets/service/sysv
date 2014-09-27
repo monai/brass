@@ -22,16 +22,13 @@
 # Source function library.
 . /etc/init.d/functions
 
-exec="<%= daemon.systemTarget %>"
-prog="<%= daemon.name %>"
-<% if ('configDir' in locals.daemon) { %>
-config="<%= daemon.configDir %>"
+exec="<%= service.systemTarget %>"
+prog="<%= service.name %>"
+<% if ('configDir' in locals.service) { %>
+config="<%= service.configDir %>"
 <% } %>
-<% if (locals.daemon.user) { %>
-user="<%= daemon.user %>"<% } else { %>user="root"
-<% } %>
-<% if (locals.daemon.group) { %>
-group="<%= daemon.group %>"<% } else { %>group="root"
+<% if (locals.service.user) { %>
+user="<%= service.user %>"<% } else { %>user="root"
 <% } %>
 
 [ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
@@ -43,12 +40,20 @@ lockfile="/var/lock/subsys/$prog"
 
 start() {
     [ -x $exec ] || exit 5
-    <% if ('daemon.configDir' in locals) { %>[ -e $config ] || exit 6<% } %>
+    <% if ('service.configDir' in locals) { %>[ -e $config ] || exit 6<% } %>
     echo -n $"Starting $prog: "
     
-    su - $user -g $group -c "NODE_ENV=production $exec $config >/dev/null 2>&1 & echo \$! > $pidfile" &&  echo_success || echo_failure
+    tmp=$(mktemp)
+    chmod 666 $tmp
+    su - $user -c "NODE_ENV=production $exec $config >/dev/null 2>&1 & echo \$! > $tmp"
+    pid=$(cat $tmp)
+    echo $pid > $pidfile
+    rm -f $tmp
+    
+    ps -p $pid >/dev/null 2>&1
     
     retval=$?
+    [ $retval -eq 0 ] && echo_success || echo_failure
     echo
     [ $retval -eq 0 ] && touch $lockfile
     return $retval

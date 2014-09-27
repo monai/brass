@@ -16,39 +16,39 @@ Source:         <%= source %>
 %description
 <%= description %>
 
-<% if (locals.daemon.type === 'sysv') { %>
+<% if (locals.service.type === 'sysv') { %>
 Requires(post): chkconfig
 Requires(preun): chkconfig
 Requires(preun): initscripts
 Requires(postun): initscripts
 
 %post
-/sbin/chkconfig --add <%= daemon.name %>
+/sbin/chkconfig --add <%= service.name %>
 
 %preun
 if [ $1 -eq 0 ]; then
-    /sbin/service <%= daemon.name %> stop >/dev/null 2>&1 || true
-    /sbin/chkconfig --del <%= daemon.name %>
+    /sbin/service <%= service.name %> stop >/dev/null 2>&1 || true
+    /sbin/chkconfig --del <%= service.name %>
 fi
 
 %postun
 if [ $1 -ge 1 ]; then
-    /sbin/service <%= daemon.name %> condrestart >/dev/null 2>&1 || true
+    /sbin/service <%= service.name %> condrestart >/dev/null 2>&1 || true
 fi
-<% } else if (locals.daemon.type === 'systemd') { %>
+<% } else if (locals.service.type === 'systemd') { %>
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
 BuildRequires: systemd
 
 %post
-%systemd_post <%= daemon.name %>.service
+%systemd_post <%= service.name %>.service
 
 %preun
-%systemd_preun <%= daemon.name %>.service
+%systemd_preun <%= service.name %>.service
 
 %postun
-%systemd_postun_with_restart <%= daemon.name %>.service 
+%systemd_postun_with_restart <%= service.name %>.service 
 <% } %>
 
 %clean
@@ -56,10 +56,9 @@ BuildRequires: systemd
 # rm -rf %{sourcedir}/*
 
 %files
-<% if (locals.daemon.type === 'sysv') { %>
-%config
+<% if (locals.service.type === 'sysv') { %>
 /etc/init.d/*
-<% } else if (locals.daemon.type === 'systemd') { %>
+<% } else if (locals.service.type === 'systemd') { %>
 /lib/systemd/system/*
 <% } %>
 <%= targetFileList %>
