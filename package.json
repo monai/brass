@@ -4,7 +4,7 @@
   "description": "Build Node.js project to a native OS package",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No test specified\" && exit 0"
   },
   "bin": {
     "brass": "bin/brass.js"
