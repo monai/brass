@@ -1,3 +1,4 @@
 node_modules/
 brass_build/
 .vagrant/
+*.tgz
