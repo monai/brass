@@ -1,7 +1,7 @@
 # brass
 
 [![Build Status](http://img.shields.io/travis/monai/brass/develop.svg)](https://travis-ci.org/monai/brass)
-[![NPM Version](http://img.shields.io/npm/brass.svg)](https://www.npmjs.org/package/brass)
+[![NPM Version](http://img.shields.io/npm/v/brass.svg)](https://www.npmjs.org/package/brass)
 
 Build Node.js project to a native OS package.
 
