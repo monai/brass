@@ -25,9 +25,10 @@ centos() {
 }
 
 trusty64() {
+    add-apt-repository -y ppa:chris-lea/node.js
     apt-get update
     apt-get -y upgrade
-    apt-get -y install build-essential
+    apt-get -y install build-essential nodejs
 }
 
 ubuntu() {
