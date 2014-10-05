@@ -24,6 +24,16 @@ centos() {
     yum install -y -q nodejs npm
 }
 
+trusty64() {
+    apt-get update
+    apt-get -y upgrade
+    apt-get -y install build-essential
+}
+
+ubuntu() {
+    true
+}
+
 install_epel() {
     local filename=$(basename $1)
     wget -q $1
@@ -39,6 +49,10 @@ case "$1" in
     centos70 )
         centos70
         centos
+        ;;
+    trusty64 )
+        trusty64
+        ubuntu
         ;;
     * ) true ;;
 esac

@@ -18,4 +18,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     centos70.vm.provision "shell", path: "tools/provision.sh", args: "centos70"
   end
   
+  config.vm.define "trusty64" do |trusty64|
+    trusty64.vm.box = "ubuntu/trusty64"
+    
+    trusty64.vm.provision "shell", path: "tools/provision.sh", args: "trusty64"
+  end
+  
 end
