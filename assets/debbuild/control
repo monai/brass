@@ -1,0 +1,14 @@
+Source:            <%= name %>
+Section:           misc
+Priority:          optional
+Build-Depends:     debhelper (>=9)
+Standards-Version: 3.9.4
+
+<% if ('url' in locals)      { %>Homepage:   <%= url      %><% } %>
+<% if ('packager' in locals) { %>Maintainer: <%= packager %><% } %>
+
+Package:<%= name %>
+Architecture: any
+Depends:      ${shlibs:Depends}, ${misc:Depends}
+Description:  <%= summary %>
+<%= description %>
