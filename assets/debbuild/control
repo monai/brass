@@ -11,4 +11,4 @@ Package:<%= name %>
 Architecture: any
 Depends:      ${shlibs:Depends}, ${misc:Depends}
 Description:  <%= summary %>
-<%= description %>
+<%= description.replace(/\n+$/g, '').replace(/\n\n/g, '\n.\n').replace(/^/gm, ' ') %>
