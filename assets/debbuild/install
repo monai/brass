@@ -1,5 +1,5 @@
-<% if (locals.service.type === 'sysv') { %>
-/etc/init.d/*
-<% } else if (locals.service.type === 'systemd') { %>
+<% if (locals.service.type == 'systemd') { -%>
 /lib/systemd/system/*
-<% } %>
+<% } -%>
+<%= targetConfFileList %>
+<%= targetFileList -%>
