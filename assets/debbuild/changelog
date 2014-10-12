@@ -1,5 +1,5 @@
 <% locals.date = new Date -%>
-<%= name %> (<%= version %>) unstable; urgency=low
+<%= name %> (<%= version %>-<%= release %>) unstable; urgency=low
 
   * Generated dummy changelog.
 
