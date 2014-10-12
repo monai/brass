@@ -15,7 +15,7 @@
   "brass": {
     "type": "deb",
     "service": {
-      "type": "systemd",
+      "type": "sysv",
       "name": "theapp",
       "target": "bin/theapp",
       "user": "vagrant"
@@ -24,7 +24,8 @@
       {
         "target": "/var",
         "files": "**/*",
-        "cwd": "var"
+        "cwd": "var",
+        "type": "config"
       },
       {
         "target": "/etc",
