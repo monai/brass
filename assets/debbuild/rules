@@ -19,25 +19,3 @@ include /usr/share/dpkg/default.mk
 # main packaging script based on dh7 syntax
 %:
 	dh $@
-
-clean:
-	true
-
-build:
-	true
-
-build-arch:
-	true
-	
-build-indep:
-	true
-
-binary:
-	true
-
-binary-arch:
-	true
-
-binary-indep:
-	true
-
