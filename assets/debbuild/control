@@ -1,11 +1,12 @@
+<% locals.maintainer = locals.packager || 'Brass'; -%>
 Source:            <%= name %>
 Section:           misc
 Priority:          optional
 Build-Depends:     debhelper (>=9)
 Standards-Version: 3.9.4
+Maintainer:        <%= maintainer %>
 
 <% if ('url' in locals)      { %>Homepage:   <%= url      %><% } %>
-<% if ('packager' in locals) { %>Maintainer: <%= packager %><% } %>
 
 Package:<%= name %>
 Architecture: any
