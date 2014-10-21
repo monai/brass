@@ -36,7 +36,8 @@ SCRIPTNAME=/etc/init.d/$NAME
 
 is_running()
 {
-    ps -p $(cat $PIDFILE >/dev/null 2>&1) >/dev/null 2>&1
+    [ -f $PIDFILE ] || return 1
+    ps -p $(cat $PIDFILE) >/dev/null 2>&1
 }
 
 #
@@ -49,10 +50,10 @@ do_start()
     #   1 if daemon was already running
     #   2 if daemon could not be started
     
-    [ -f $PIDFILE ] && is_running && return 1
+    is_running && return 1
     start-stop-daemon --start --quiet --pidfile $PIDFILE --make-pidfile \
         --startas $DAEMON --name $NAME --background -- $DAEMON_ARGS >/dev/null
-    wait
+    cat $PIDFILE >/dev/null 2>&1
     is_running || return 2
     return 0
 }
@@ -67,7 +68,7 @@ do_stop()
     #   1 if daemon was already stopped
     #   2 if daemon could not be stopped
     #   other if a failure occurred
-    start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $NAME
+    start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE
     RETVAL="$?"
     [ "$RETVAL" = 2 ] && return 2
     # Wait for children to finish too if this is a daemon that forks
