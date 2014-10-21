@@ -15,7 +15,7 @@
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="<%= summary %>"
 NAME=<%= name %>
-DAEMON=<%= name %>
+DAEMON=<%= service.systemTarget %>
 DAEMON_ARGS=""
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
@@ -36,7 +36,7 @@ SCRIPTNAME=/etc/init.d/$NAME
 
 is_running()
 {
-    ps -p $(cat $PIDFILE) >/dev/null 2>&1
+    ps -p $(cat $PIDFILE >/dev/null 2>&1) >/dev/null 2>&1
 }
 
 #
