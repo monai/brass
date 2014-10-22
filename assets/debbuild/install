@@ -1,7 +1,2 @@
-<% if (locals.service.type == 'systemd') { -%>
-/lib/systemd/system/*
-<% } else if (locals.service.type == 'upstart') { -%>
-/etc/init/*
-<% } -%>
 <%= targetConfFileList %>
 <%= targetFileList -%>
