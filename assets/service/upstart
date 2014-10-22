@@ -1,0 +1,10 @@
+description "<%= summary %>"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+respawn
+
+env NODE_ENVIRONMENT=production
+
+exec <%= service.systemTarget %>

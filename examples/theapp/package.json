@@ -15,7 +15,7 @@
   "brass": {
     "type": "deb",
     "service": {
-      "type": "sysv",
+      "type": "upstart",
       "name": "theapp",
       "target": "bin/theapp",
       "user": "vagrant"
