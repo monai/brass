@@ -1,4 +1,4 @@
-%define _topdir <%= RPMBUILD_DIR %>
+%define _topdir <%= BUILD_DIR %>
 %define _base   <%= name %>
 
 Summary:        <%= summary %>
