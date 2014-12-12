@@ -12,6 +12,7 @@ Source:         <%= source %>
 <% if ('distribution' in locals) { %>Distribution:   <%= distribution   %><% } %>
 <% if ('vendor' in locals)       { %>Vendor:         <%= vendor         %><% } %>
 <% if ('packager' in locals)     { %>Packager:       <%= packager       %><% } %>
+Autoreq:        0
 
 %description
 <%= description %>
