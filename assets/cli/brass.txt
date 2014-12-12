@@ -10,6 +10,8 @@ Options:
                         e.g. --o.summary="Awesome module"
   
   -w, --work-dir        directory where to build package
+  -i, --input           input type, default: autodetect
+                        supported: none, npm
   
   -V, --verbose         verbose oputput
   -v, --version         output version number
