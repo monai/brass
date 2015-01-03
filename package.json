@@ -1,6 +1,6 @@
 {
   "name": "brass",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Build Node.js project to a native OS package",
   "main": "index.js",
   "scripts": {
