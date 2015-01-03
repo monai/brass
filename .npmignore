@@ -1,6 +1,7 @@
+brass_build
 node_modules
 tools
-brass_build
+tmp
 .vagrant
 .gitignore
 .npmignore
