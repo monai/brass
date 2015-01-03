@@ -1,4 +1,6 @@
-node_modules/
-brass_build/
-.vagrant/
+node_modules
+brass_build
+tmp
+npm-debug.log
+.vagrant
 *.tgz

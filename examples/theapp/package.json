@@ -13,9 +13,9 @@
     "connect": "^3.1.0"
   },
   "brass": {
-    "type": "rpm",
+    "type": "deb",
     "service": {
-      "type": "systemd",
+      "type": "upstart",
       "name": "theapp",
       "target": "bin/theapp",
       "user": "vagrant"
@@ -24,7 +24,8 @@
       {
         "target": "/var",
         "files": "**/*",
-        "cwd": "var"
+        "cwd": "var",
+        "type": "config"
       },
       {
         "target": "/etc",

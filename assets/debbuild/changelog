@@ -1,0 +1,6 @@
+<% locals.date = new Date -%>
+<%= name %> (<%= version %>-<%= release %>) unstable; urgency=low
+
+  * Generated dummy changelog.
+
+ -- Brass <brass@example.com>  <%=: date | toRFCString %>

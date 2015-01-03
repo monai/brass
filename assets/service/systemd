@@ -10,6 +10,9 @@ Environment="NODE_ENV=production"
 <% if (locals.service.user) { %>
 User=<%= service.user %>
 <% } %>
+<% if (locals.service.group) { %>
+Group=<%= service.group %>
+<% } %>
 
 [Install]
 WantedBy=multi-user.target

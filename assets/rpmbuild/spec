@@ -1,4 +1,4 @@
-%define _topdir <%= RPMBUILD_DIR %>
+%define _topdir <%= BUILD_DIR %>
 %define _base   <%= name %>
 
 Summary:        <%= summary %>
@@ -12,6 +12,7 @@ Source:         <%= source %>
 <% if ('distribution' in locals) { %>Distribution:   <%= distribution   %><% } %>
 <% if ('vendor' in locals)       { %>Vendor:         <%= vendor         %><% } %>
 <% if ('packager' in locals)     { %>Packager:       <%= packager       %><% } %>
+Autoreq:        0
 
 %description
 <%= description %>
@@ -35,7 +36,7 @@ fi
 if [ $1 -ge 1 ]; then
     /sbin/service <%= service.name %> condrestart >/dev/null 2>&1 || true
 fi
-<% } else if (locals.service.type === 'systemd') { %>
+<% } else if (locals.service.type == 'systemd') { %>
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
@@ -56,9 +57,11 @@ BuildRequires: systemd
 # rm -rf %{sourcedir}/*
 
 %files
-<% if (locals.service.type === 'sysv') { %>
+<% if (locals.service.type == 'sysv') { %>
 /etc/init.d/*
-<% } else if (locals.service.type === 'systemd') { %>
+<% } else if (locals.service.type == 'systemd') { %>
 /lib/systemd/system/*
+<% } else if (locals.service.type == 'upstart') { %>
+/etc/init/*
 <% } %>
 <%= targetFileList %>

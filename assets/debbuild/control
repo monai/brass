@@ -1,0 +1,15 @@
+<% locals.maintainer = locals.packager || 'Brass'; -%>
+Source:            <%= name %>
+Section:           misc
+Priority:          optional
+Build-Depends:     debhelper (>=9)
+Standards-Version: 3.9.4
+Maintainer:        <%= maintainer %>
+
+<% if ('url' in locals)      { %>Homepage:   <%= url      %><% } %>
+
+Package:<%= name %>
+Architecture: any
+Depends:      ${shlibs:Depends}, ${misc:Depends}
+Description:  <%= summary %>
+<%= description.replace(/\n+$/g, '').replace(/\n\n/g, '\n.\n').replace(/^/gm, ' ') %>

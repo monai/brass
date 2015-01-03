@@ -11,7 +11,7 @@ centos64() {
 }
 
 centos70() {
-    install_epel http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-1.noarch.rpm
+    install_epel http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
     
     yum -y -q --nogpgcheck groups mark install "Development Tools"
     yum -y -q --nogpgcheck update
@@ -22,6 +22,17 @@ centos70() {
 
 centos() {
     yum install -y -q nodejs npm
+}
+
+trusty64() {
+    add-apt-repository -y ppa:chris-lea/node.js
+    apt-get update
+    apt-get -y upgrade
+    apt-get -y install build-essential debhelper nodejs
+}
+
+ubuntu() {
+    true
 }
 
 install_epel() {
@@ -39,6 +50,10 @@ case "$1" in
     centos70 )
         centos70
         centos
+        ;;
+    trusty64 )
+        trusty64
+        ubuntu
         ;;
     * ) true ;;
 esac

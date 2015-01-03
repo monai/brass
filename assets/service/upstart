@@ -1,0 +1,17 @@
+description "<%= summary %>"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+respawn
+
+env NODE_ENVIRONMENT=production
+
+<% if (locals.service.user) { %>
+setuid <%= service.user %>
+<% } %>
+<% if (locals.daemon.group) { %>
+setgid <%= daemon.group %>
+<% } %>
+
+exec <%= service.systemTarget %>
