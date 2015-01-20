@@ -1,5 +1,7 @@
 # brass
 
+This project is deprecated. Use [gulp-brass](https://github.com/monai/gulp-brass) and [gulp-brass-npm](https://github.com/monai/gulp-brass-npm) instead.
+
 [![Build Status](http://img.shields.io/travis/monai/brass/develop.svg)](https://travis-ci.org/monai/brass)
 [![NPM Version](http://img.shields.io/npm/v/brass.svg)](https://www.npmjs.org/package/brass)
 
